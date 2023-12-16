@@ -11,13 +11,13 @@ def is_tool(name):
     return which(name) is not None
 
 
-def get_device_role(role):
-    device_role = nb.dcim.device_roles.get(
+def get_role(role):
+    role = nb.dcim.roles.get(
         name=role
     )
-    if device_role is None:
+    if role is None:
         raise Exception('DeviceRole "{}" does not exist, please create it'.format(role))
-    return device_role
+    return role
 
 
 def get_device_type(type):

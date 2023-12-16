@@ -3,7 +3,7 @@ from netbox_agent.config import config
 from netbox_agent.config import netbox_instance as nb
 from netbox_agent.inventory import Inventory
 from netbox_agent.location import Datacenter, Rack, Tenant
-from netbox_agent.misc import create_netbox_tags, get_device_role, get_device_type, get_device_platform
+from netbox_agent.misc import create_netbox_tags, get_role, get_device_type, get_device_platform
 from netbox_agent.network import ServerNetwork
 from netbox_agent.power import PowerSupply
 from pprint import pprint
@@ -191,7 +191,7 @@ class ServerBase():
 
     def _netbox_create_chassis(self, datacenter, tenant, rack):
         device_type = get_device_type(self.get_chassis())
-        device_role = get_device_role(config.device.chassis_role)
+        role = get_role(config.device.chassis_role)
         serial = self.get_chassis_service_tag()
         logging.info('Creating chassis blade (serial: {serial})'.format(
             serial=serial))
@@ -199,7 +199,7 @@ class ServerBase():
             name=self.get_chassis_name(),
             device_type=device_type.id,
             serial=serial,
-            device_role=device_role.id,
+            role=role.id,
             site=datacenter.id if datacenter else None,
             tenant=tenant.id if tenant else None,
             rack=rack.id if rack else None,
@@ -209,7 +209,7 @@ class ServerBase():
         return new_chassis
 
     def _netbox_create_blade(self, chassis, datacenter, tenant, rack):
-        device_role = get_device_role(config.device.blade_role)
+        role = get_role(config.device.blade_role)
         device_type = get_device_type(self.get_product_name())
         serial = self.get_service_tag()
         hostname = self.get_hostname()
@@ -220,7 +220,7 @@ class ServerBase():
         new_blade = nb.dcim.devices.create(
             name=hostname,
             serial=serial,
-            device_role=device_role.id,
+            role=role.id,
             device_type=device_type.id,
             parent_device=chassis.id,
             site=datacenter.id if datacenter else None,
@@ -232,7 +232,7 @@ class ServerBase():
         return new_blade
 
     def _netbox_create_blade_expansion(self, chassis, datacenter, tenant, rack):
-        device_role = get_device_role(config.device.blade_role)
+        role = get_role(config.device.blade_role)
         device_type = get_device_type(self.get_expansion_product())
         serial = self.get_expansion_service_tag()
         hostname = self.get_hostname() + " expansion"
@@ -243,7 +243,7 @@ class ServerBase():
         new_blade = nb.dcim.devices.create(
             name=hostname,
             serial=serial,
-            device_role=device_role.id,
+            role=role.id,
             device_type=device_type.id,
             parent_device=chassis.id,
             site=datacenter.id if datacenter else None,
@@ -261,7 +261,7 @@ class ServerBase():
             server.delete()
 
     def _netbox_create_server(self, datacenter, tenant, rack):
-        device_role = get_device_role(config.device.server_role)
+        role = get_role(config.device.server_role)
         device_type = get_device_type(self.get_product_name())
         if not device_type:
             raise Exception('Chassis "{}" doesn\'t exist'.format(self.get_chassis()))
@@ -272,7 +272,7 @@ class ServerBase():
         new_server = nb.dcim.devices.create(
             name=hostname,
             serial=serial,
-            device_role=device_role.id,
+            role=role.id,
             device_type=device_type.id,
             platform=self.device_platform.id,
             site=datacenter.id if datacenter else None,
