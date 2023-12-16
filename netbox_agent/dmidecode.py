@@ -7,8 +7,8 @@ from netbox_agent.misc import is_tool
 
 _handle_re = _re.compile('^Handle\\s+(.+),\\s+DMI\\s+type\\s+(\\d+),\\s+(\\d+)\\s+bytes$')
 _in_block_re = _re.compile('^\\t\\t(.+)$')
-_record_re = _re.compile('\\t(.+):\\s+(.+)$')
-_record2_re = _re.compile('\\t(.+):$')
+_record_re = _re.compile('\\t([^:]+):\\s+(.+)$')
+_record2_re = _re.compile('\\t([^:]+):$')
 
 _type2str = {
     0: 'BIOS',
